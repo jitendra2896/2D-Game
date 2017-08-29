@@ -21,6 +21,7 @@ public:
 			}
 			w = width;
 			h = height;
+			glfwWindowHint(GLFW_SAMPLES, 4);
 			window = glfwCreateWindow(width, height, title, NULL, NULL);
 			glfwMakeContextCurrent(window);
 			glewInit();

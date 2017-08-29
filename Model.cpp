@@ -3,7 +3,6 @@
 #include<GL\freeglut.h>
 #include<iostream>
 
-
 float clamp(float num, float min, float max) {
 	if (num <= min)
 		num = min;
@@ -14,7 +13,8 @@ float clamp(float num, float min, float max) {
 
 void multiplyVectorAndMatrix(Vector2f& v, glm::mat4 matrix) {
 	glm::vec4 vector(v.x, v.y, 0, 1);
-	glm::vec4 result = matrix*glm::vec4(1.0f);
+	glm::vec4 temp(0.0f, 1.0f, 0.0f, 1.0f);
+	glm::vec4 result = matrix*temp;
 	v.x = result.x;
 	v.y = result.y;
 }

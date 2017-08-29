@@ -12,10 +12,66 @@ bool keyUp;
 float xPos;
 float yPos;
 
-void cursorPosition(GLFWwindow* window, double x, double y) {
-	xPos = (x / window1->getWidth()) * 50;
-	yPos = (1-(y / window1->getHeight())) * 50;
+bool KEY_W,KEY_S,KEY_A,KEY_D,KEY_RIGHT,KEY_LEFT,KEY_SPACE;
+int state;
+
+void receiveInput(GLFWwindow* window) {
+	state = glfwGetKey(window, GLFW_KEY_W);
+	if (state == GLFW_PRESS) {
+		KEY_W = true;
+	}
+	if (state == GLFW_RELEASE) {
+		KEY_W = false;
+	}
+	state = glfwGetKey(window, GLFW_KEY_S);
+	if (state == GLFW_PRESS) {
+		KEY_S = true;
+	}
+	if (state == GLFW_RELEASE) {
+		KEY_S = false;
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_A);
+	if (state == GLFW_PRESS) {
+		KEY_A = true;
+	}
+	if (state == GLFW_RELEASE) {
+		KEY_A = false;
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_D);
+	if (state == GLFW_PRESS) {
+		KEY_D = true;
+	}
+	if (state == GLFW_RELEASE) {
+		KEY_D = false;
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_SPACE);
+	if (state == GLFW_PRESS) {
+		KEY_SPACE = true;
+	}
+	if (state == GLFW_RELEASE) {
+		KEY_SPACE = false;
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_RIGHT);
+	if (state == GLFW_PRESS) {
+		KEY_RIGHT = true;
+	}
+	if (state == GLFW_RELEASE) {
+		KEY_RIGHT = false;
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_LEFT);
+	if (state == GLFW_PRESS) {
+		KEY_LEFT = true;
+	}
+	if (state == GLFW_RELEASE) {
+		KEY_LEFT = false;
+	}
 }
+
 
 void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	action_key = key;
@@ -33,5 +89,4 @@ void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int
 void registerInput(Display* window) {
 	window1 = window;
 	glfwSetKeyCallback(window->getGLFWWindow(), keyboardCallback);
-	glfwSetCursorPosCallback(window->getGLFWWindow(),cursorPosition);
 }

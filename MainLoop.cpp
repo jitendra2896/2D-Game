@@ -9,18 +9,15 @@
 #include<vector>
 
 const int MAX_BULLETS = 4;
-int nextBulletPosition = 0;
 const float TIME_PER_FRAME = 1.0f / 60.0f;
 float expected_frame_end = glfwGetTime() + TIME_PER_FRAME;
 
 const int BULLET_FIRE_RATE = 4;
 const float PER_BULLET_TIME = 1.0f / BULLET_FIRE_RATE;
-float bullet_shoot_time = glfwGetTime() + PER_BULLET_TIME;
-
 float lastShootTime = 0;
 
 Display* window = Display::createDisplay(600, 600, "Hello World");
-DynamicModel2D* player = new DynamicModel2D(Vector2f(25, 25),Vector2f(0,1),1,50, 75);
+DynamicModel2D* player = new DynamicModel2D(Vector2f(25, 25),Vector2f(0,1),1,50, 200);
 std::vector<Bullet> bullets;
 StaticShader shader;
 
@@ -46,37 +43,45 @@ bool canShoot() {
 }
 
 void update() {
+
+	receiveInput(window->getGLFWWindow());
+
 	float playerX = 0;
 	float playerY = 0;
 
 	int rot = 0;
 
-	if (keyDown && action_key == GLFW_KEY_W) {
+	if (KEY_W) {
 		playerX = 0;
 		playerY = 1;
 	}
-	else if (keyDown && action_key == GLFW_KEY_S) {
+/*
+	if (keyDown && action_key == GLFW_KEY_W) {
+		playerX = 0;
+		playerY = 1;
+	}*/
+	else if (KEY_S) {
 		playerX = 0;
 		playerY = -1;
 	}
-	else if (keyDown && action_key == GLFW_KEY_A) {
+	else if (KEY_A) {
 		playerX = -1;
 		playerY = 0;
 	}
-	else if (keyDown && action_key == GLFW_KEY_D) {
+	else if (KEY_D) {
 		playerX = 1;
 		playerY = 0;
 	}
 
-	if (keyDown && action_key == GLFW_KEY_RIGHT) {
+	if (KEY_RIGHT) {
 		rot = -1;
 	}
-	else if (keyDown && action_key == GLFW_KEY_LEFT) {
+	else if (KEY_LEFT) {
 		rot = 1;
 	}
 
-	if (canShoot() && keyDown && action_key == GLFW_KEY_SPACE) {
-		Bullet ob(player->getPosition(), player->getFrontVector(), 0.4f, 50);
+	if (canShoot() && KEY_SPACE) {
+		Bullet ob(player->getPosition(), player->getFrontVector(), 0.4f, 75);
 		ob.bindVertexAttributes(shader.getAttributeLocation("position"));
 		bullets.push_back(ob);
 		lastShootTime = glfwGetTime();
@@ -99,6 +104,7 @@ void render() {
 }
 
 int main(int argc, char** argv) {
+	glEnable(GL_MULTISAMPLE);
 	init();
 	while (!glfwWindowShouldClose(window->getGLFWWindow())) {
 		render();
