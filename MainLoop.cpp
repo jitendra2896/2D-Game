@@ -13,9 +13,15 @@ int nextBulletPosition = 0;
 const float TIME_PER_FRAME = 1.0f / 60.0f;
 float expected_frame_end = glfwGetTime() + TIME_PER_FRAME;
 
+const int BULLET_FIRE_RATE = 4;
+const float PER_BULLET_TIME = 1.0f / BULLET_FIRE_RATE;
+float bullet_shoot_time = glfwGetTime() + PER_BULLET_TIME;
+
+float lastShootTime = 0;
+
 Display* window = Display::createDisplay(600, 600, "Hello World");
-DynamicModel2D* player = new DynamicModel2D(Vector2f(25, 25),Vector2f(1,0),50, 2);
-std::vector<DynamicModel2D*> bullets;
+DynamicModel2D* player = new DynamicModel2D(Vector2f(25, 25),Vector2f(0,1),1,50, 75);
+std::vector<Bullet> bullets;
 StaticShader shader;
 
 void init() {
@@ -29,6 +35,14 @@ void wait() {
 
 	}
 	expected_frame_end += TIME_PER_FRAME;
+}
+
+bool canShoot() {
+	if ((glfwGetTime()-lastShootTime)<=PER_BULLET_TIME) {
+		return false;
+	}
+
+	return true;
 }
 
 void update() {
@@ -61,18 +75,14 @@ void update() {
 		rot = 1;
 	}
 
-	if (keyDown && action_key == GLFW_KEY_SPACE) {
-		std::cout << "SPACE" << std::endl;
-		DynamicModel2D* bullet = new DynamicModel2D(player->getPosition(), Vector2f(0, 0), 70, 0);
-		bullet->bindVertexAttributes(shader.getAttributeLocation("position"));
-		bullets.push_back(bullet);
+	if (canShoot() && keyDown && action_key == GLFW_KEY_SPACE) {
+		Bullet ob(player->getPosition(), player->getFrontVector(), 0.4f, 50);
+		ob.bindVertexAttributes(shader.getAttributeLocation("position"));
+		bullets.push_back(ob);
+		lastShootTime = glfwGetTime();
 	}
 
-	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i]->move(0, 1, TIME_PER_FRAME);
-	}
-
-	player->rotate(rot);
+	player->rotate(rot,TIME_PER_FRAME);
 	player->move(playerX, playerY, TIME_PER_FRAME);
 }
 
@@ -82,10 +92,9 @@ void render() {
 	shader.useProgram();
 	player->render();
 	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i]->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"));
-		bullets[i]->render();
+		bullets[i].setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"));
+		bullets[i].shoot(TIME_PER_FRAME);
 	}
-	wait();
 	shader.stopProgram();
 }
 
@@ -94,6 +103,7 @@ int main(int argc, char** argv) {
 	while (!glfwWindowShouldClose(window->getGLFWWindow())) {
 		render();
 		update();
+		wait();
 		window->swapBuffers();
 		glfwPollEvents();
 	}

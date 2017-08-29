@@ -14,14 +14,15 @@ float clamp(float num, float min, float max) {
 
 void multiplyVectorAndMatrix(Vector2f& v, glm::mat4 matrix) {
 	glm::vec4 vector(v.x, v.y, 0, 1);
-	glm::vec4 result = matrix*vector;
+	glm::vec4 result = matrix*glm::vec4(1.0f);
 	v.x = result.x;
 	v.y = result.y;
 }
 
-Model2D::Model2D(const Vector2f& pos, const Vector2f& fv) {
+Model2D::Model2D(const Vector2f& pos, const Vector2f& fv,float scale) {
 	this->position = pos;
 	this->frontVector = fv;
+	this->scale = scale;
 	vertices[0] = -1;
 	vertices[1] = 1;
 	vertices[2] = -1;
@@ -70,8 +71,9 @@ glm::mat4 Model2D::createProjectionMatrix() {
 glm::mat4 Model2D::createTransformationMatrix() {
 	glm::mat4 translationMatrix = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0));
 	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1), angle, glm::vec3(0, 0, 1));
+	glm::mat4 scaleMatrix = glm::scale(glm::mat4(1), glm::vec3(scale, scale, scale));
 	multiplyVectorAndMatrix(frontVector, rotationMatrix);
-	glm::mat4 transformationMatrix = translationMatrix*rotationMatrix;
+	glm::mat4 transformationMatrix = translationMatrix*rotationMatrix*scaleMatrix;
 	return transformationMatrix;
 }
 
@@ -80,7 +82,7 @@ void Model2D::setUniformMatrixLocation(int pml, int tml) {
 	uniformTransformationMatrixLocation = tml;
 }
 
-StaticModel2D::StaticModel2D(const Vector2f& pos) :Model2D(pos, Vector2f(0, 0)) {
+StaticModel2D::StaticModel2D(const Vector2f& pos,float scale) :Model2D(pos, Vector2f(0, 0),scale) {
 
 }
 
@@ -94,7 +96,7 @@ void StaticModel2D::render() {
 	glBindVertexArray(0);
 }
 
-DynamicModel2D::DynamicModel2D(const Vector2f& pos,const Vector2f& fv,float speed,float rotationSpeed):Model2D(pos,fv) {
+DynamicModel2D::DynamicModel2D(const Vector2f& pos,const Vector2f& fv,float scale,float speed,float rotationSpeed):Model2D(pos,fv,scale) {
 	this->speed = speed;
 	this->rotationSpeed = rotationSpeed;
 	angle = 0.0f;
@@ -107,8 +109,8 @@ void DynamicModel2D::move(float dx, float dy,float deltaTime) {
 	position.y = clamp(position.y, 1, 49);
 }
 
-void DynamicModel2D::rotate(int angle) {
-	this->angle += angle*rotationSpeed*0.0174533;
+void DynamicModel2D::rotate(int angle,float deltaTime) {
+	this->angle += angle*rotationSpeed*0.0174533*deltaTime;
 }
 
 void DynamicModel2D::render() {
@@ -121,7 +123,16 @@ void DynamicModel2D::render() {
 	glBindVertexArray(0);
 }
 
-void Bullet::shoot() {
+Bullet::Bullet(const Vector2f& position, const Vector2f& direction,float scale, float speed) :DynamicModel2D(position, Vector2f(0, 0),scale, speed, 0) {
+	this->direction = direction;
+}
+
+void Bullet::move(float deltaTime) {
+	position.x += direction.x*deltaTime*speed;
+	position.y += direction.y*deltaTime*speed;
+}
+
+void Bullet::shoot(float deltaTime) {
+	move(deltaTime);
 	render();
-	position.y++;
 }
