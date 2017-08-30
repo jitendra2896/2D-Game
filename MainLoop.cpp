@@ -55,11 +55,6 @@ void update() {
 		playerX = 0;
 		playerY = 1;
 	}
-/*
-	if (keyDown && action_key == GLFW_KEY_W) {
-		playerX = 0;
-		playerY = 1;
-	}*/
 	else if (KEY_S) {
 		playerX = 0;
 		playerY = -1;
@@ -85,6 +80,14 @@ void update() {
 		ob.bindVertexAttributes(shader.getAttributeLocation("position"));
 		bullets.push_back(ob);
 		lastShootTime = glfwGetTime();
+	}
+
+	//Delete bullets if they are not visible
+	for (int i = 0; i < bullets.size(); i++) {
+		if (!bullets[i].isVisible()) {
+			bullets[i].clear();
+			bullets.erase(bullets.begin() + i);
+		}
 	}
 
 	player->rotate(rot,TIME_PER_FRAME);

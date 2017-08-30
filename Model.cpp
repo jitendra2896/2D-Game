@@ -82,6 +82,20 @@ void Model2D::setUniformMatrixLocation(int pml, int tml) {
 	uniformTransformationMatrixLocation = tml;
 }
 
+bool Model2D::isVisible() {
+	if (position.x > 50 || position.y > 50 || position.x < 0 || position.y<0) {
+		return false;
+	}
+	return true;
+}
+
+void Model2D::clear() {
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDeleteBuffers(1, &vboId);
+	glBindVertexArray(0);
+	glDeleteVertexArrays(1, &vaoId);
+}
+
 StaticModel2D::StaticModel2D(const Vector2f& pos,float scale) :Model2D(pos, Vector2f(0, 0),scale) {
 
 }

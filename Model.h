@@ -12,8 +12,8 @@ protected:
 	float scale;
 	Vector2f frontVector;
 	float angle;
-	int vboId;
-	int vaoId;
+	unsigned int vboId;
+	unsigned int vaoId;
 	int uniformProjectionMatrixLocation;
 	int uniformTransformationMatrixLocation;
 	glm::mat4 projectionMatrix;
@@ -26,6 +26,8 @@ public:
 	void bindVertexAttributes(int vPosition);
 	Vector2f getPosition();
 	Vector2f getFrontVector();
+	void clear();
+	bool isVisible();
 	void setUniformMatrixLocation(int pml, int tml);
 	virtual void render() = 0;
 };
@@ -51,8 +53,8 @@ public:
 class Bullet : public DynamicModel2D {
 
 	Vector2f direction;
+	void move(float deltaTime);
 public:
 	Bullet(const Vector2f& pos, const Vector2f& direction,float scale, float speed);
 	void shoot(float deltaTime);
-	void move(float deltaTime);
 };
