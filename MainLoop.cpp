@@ -12,12 +12,13 @@ const int MAX_BULLETS = 4;
 const float TIME_PER_FRAME = 1.0f / 60.0f;
 float expected_frame_end = glfwGetTime() + TIME_PER_FRAME;
 
-const int BULLET_FIRE_RATE = 4;
+const int BULLET_FIRE_RATE = 5;
 const float PER_BULLET_TIME = 1.0f / BULLET_FIRE_RATE;
 float lastShootTime = 0;
 
 Display* window = Display::createDisplay(600, 600, "Hello World");
-DynamicModel2D* player = new DynamicModel2D(Vector2f(25, 25),Vector2f(0,1),1,50, 200);
+DynamicModel2D* player = new Player(Vector2f(25, 25),Vector2f(0,1),1,50, 200,Vector3f(1,0,0));
+Enemy* enemy = new SimpleEnemy(Vector2f(25, 45), 1, 25, Vector3f(0, 0, 1),SimpleEnemy::Axis::yAxis);
 std::vector<Bullet> bullets;
 StaticShader shader;
 
@@ -25,6 +26,9 @@ void init() {
 	registerInput(window);
 	glClearColor(0, 0, 0, 0);
 	player->bindVertexAttributes(shader.getAttributeLocation("position"));
+	enemy->bindVertexAttributes(shader.getAttributeLocation("position"));
+	player->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"), shader.getUniformLocation("color"));
+	enemy->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"), shader.getUniformLocation("color"));
 }
 
 void wait() {
@@ -76,7 +80,7 @@ void update() {
 	}
 
 	if (canShoot() && KEY_SPACE) {
-		Bullet ob(player->getPosition(), player->getFrontVector(), 0.4f, 75);
+		Bullet ob(player->getPosition(), player->getFrontVector(), 0.4f, 75,Vector3f(1,1,0));
 		ob.bindVertexAttributes(shader.getAttributeLocation("position"));
 		bullets.push_back(ob);
 		lastShootTime = glfwGetTime();
@@ -89,18 +93,18 @@ void update() {
 			bullets.erase(bullets.begin() + i);
 		}
 	}
-
+	enemy->moveEnemy(TIME_PER_FRAME);
 	player->rotate(rot,TIME_PER_FRAME);
 	player->move(playerX, playerY, TIME_PER_FRAME);
 }
 
 void render() {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	player->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"));
 	shader.useProgram();
 	player->render();
+	enemy->render();
 	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i].setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"));
+		bullets[i].setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"), shader.getUniformLocation("color"));
 		bullets[i].shoot(TIME_PER_FRAME);
 	}
 	shader.stopProgram();

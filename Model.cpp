@@ -19,10 +19,11 @@ void multiplyVectorAndMatrix(Vector2f& v, glm::mat4 matrix) {
 	v.y = result.y;
 }
 
-Model2D::Model2D(const Vector2f& pos, const Vector2f& fv,float scale) {
+Model2D::Model2D(const Vector2f& pos, const Vector2f& fv,float scale, const Vector3f& color) {
 	this->position = pos;
 	this->frontVector = fv;
 	this->scale = scale;
+	this->color = color;
 	vertices[0] = -1;
 	vertices[1] = 1;
 	vertices[2] = -1;
@@ -77,9 +78,10 @@ glm::mat4 Model2D::createTransformationMatrix() {
 	return transformationMatrix;
 }
 
-void Model2D::setUniformMatrixLocation(int pml, int tml) {
+void Model2D::setUniformMatrixLocation(int pml, int tml,int cl) {
 	uniformProjectionMatrixLocation = pml;
 	uniformTransformationMatrixLocation = tml;
+	uniformColorLocation = cl;
 }
 
 bool Model2D::isVisible() {
@@ -96,7 +98,7 @@ void Model2D::clear() {
 	glDeleteVertexArrays(1, &vaoId);
 }
 
-StaticModel2D::StaticModel2D(const Vector2f& pos,float scale) :Model2D(pos, Vector2f(0, 0),scale) {
+StaticModel2D::StaticModel2D(const Vector2f& pos,float scale, const Vector3f& color) :Model2D(pos, Vector2f(0, 0),scale,color) {
 
 }
 
@@ -106,11 +108,12 @@ void StaticModel2D::render() {
 	transformationMatrix = createTransformationMatrix();
 	glUniformMatrix4fv(uniformProjectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
 	glUniformMatrix4fv(uniformTransformationMatrixLocation, 1, GL_FALSE, &transformationMatrix[0][0]);
+	glUniform4f(uniformColorLocation, color.x, color.y, color.z, 1.0f);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }
 
-DynamicModel2D::DynamicModel2D(const Vector2f& pos,const Vector2f& fv,float scale,float speed,float rotationSpeed):Model2D(pos,fv,scale) {
+DynamicModel2D::DynamicModel2D(const Vector2f& pos,const Vector2f& fv,float scale,float speed,float rotationSpeed, const Vector3f& color):Model2D(pos,fv,scale,color) {
 	this->speed = speed;
 	this->rotationSpeed = rotationSpeed;
 	angle = 0.0f;
@@ -133,20 +136,64 @@ void DynamicModel2D::render() {
 	transformationMatrix = createTransformationMatrix();
 	glUniformMatrix4fv(uniformProjectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
 	glUniformMatrix4fv(uniformTransformationMatrixLocation, 1, GL_FALSE, &transformationMatrix[0][0]);
+	glUniform4f(uniformColorLocation, color.x, color.y, color.z, 1.0f);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }
 
-Bullet::Bullet(const Vector2f& position, const Vector2f& direction,float scale, float speed) :DynamicModel2D(position, Vector2f(0, 0),scale, speed, 0) {
+Player::Player(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, const Vector3f& color) :DynamicModel2D(pos, fv, scale, speed, rotationSpeed, color) {
+
+}
+
+void Player::move(float dx, float dy, float deltaTime) {
+	position.x += dx*deltaTime*speed;
+	position.y += dy*deltaTime*speed;
+	position.x = clamp(position.x, 1, 49);
+	position.y = clamp(position.y, 1, 49);
+}
+
+Bullet::Bullet(const Vector2f& position, const Vector2f& direction,float scale, float speed, const Vector3f& color) :DynamicModel2D(position, Vector2f(0, 0),scale, speed, 0,color) {
 	this->direction = direction;
 }
 
-void Bullet::move(float deltaTime) {
+void Bullet::move(float dx,float dy,float deltaTime) {
 	position.x += direction.x*deltaTime*speed;
 	position.y += direction.y*deltaTime*speed;
 }
 
 void Bullet::shoot(float deltaTime) {
-	move(deltaTime);
+	move(0,0,deltaTime);
 	render();
+}
+
+Enemy::Enemy(const Vector2f& position, const Vector2f& fv, float scale, float speed, const Vector3f& color) :DynamicModel2D(position, fv, scale, speed, 0,color) {
+}
+
+SimpleEnemy::SimpleEnemy(const Vector2f& position, float scale, float speed, const Vector3f& color,Axis axis) : Enemy(position, Vector2f(0,0), scale, speed, color) {
+	this->axis = axis; 
+	if (axis == Axis::xAxis) {
+		xDirection = 1;
+		yDirection = 0;
+	}
+	else {
+		xDirection = 0;
+		yDirection = 1;
+	}
+}
+
+void SimpleEnemy::move(float dx,float dy,float deltaTime) {
+	if (position.x >= 49 || position.x <= 1) {
+		xDirection = -xDirection;
+	}
+
+	if (position.y >= 49 || position.y <= 1) {
+		yDirection = -yDirection;
+	}
+	this->position.x += xDirection*speed*deltaTime;
+	this->position.y += yDirection*speed*deltaTime;
+
+}
+
+void SimpleEnemy::moveEnemy(float deltaTime) {
+	move(0, 0, deltaTime);
 }
