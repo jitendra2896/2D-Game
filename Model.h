@@ -21,16 +21,17 @@ protected:
 	glm::mat4 projectionMatrix;
 	glm::mat4 transformationMatrix;
 	glm::mat4 createProjectionMatrix();
-	glm::mat4 createTransformationMatrix();
 
 public:
 	Model2D(const Vector2f& pos, const Vector2f& fv,float scale,const Vector3f& color);
 	void bindVertexAttributes(int vPosition);
 	Vector2f getPosition();
 	Vector2f getFrontVector();
+	float getScale();
 	void clear();
 	bool isVisible();
 	void setUniformMatrixLocation(int pml, int tml,int cl);
+	glm::mat4 createTransformationMatrix();
 	virtual void render() = 0;
 };
 

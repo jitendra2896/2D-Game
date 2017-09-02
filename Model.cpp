@@ -44,6 +44,10 @@ Vector2f Model2D::getFrontVector() {
 	return frontVector;
 }
 
+float Model2D::getScale() {
+	return scale;
+}
+
 void Model2D::loadDataToBuffers() {
 	GLuint vboId;
 	glGenBuffers(1, &vboId);

@@ -66,6 +66,10 @@ public:
 		return false;
 	}
 
+	Vector2f operator*(float m) {
+		return Vector2f(x*m, y*m);
+	}
+
 	bool isZeroVector() {
 		if (x == 0 && y == 0)
 			return true;
