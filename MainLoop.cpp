@@ -19,9 +19,9 @@ float lastShootTime = 0;
 
 Display* window = Display::createDisplay(600, 600, "Hello World");
 DynamicModel2D* player = new Player(Vector2f(25, 25),Vector2f(0,1),1,50, 200,Vector3f(1,0,0));
-
 std::vector<Bullet> bullets;
 std::vector<Enemy*> enemies;
+
 StaticShader shader;
 
 void init() {
@@ -30,6 +30,11 @@ void init() {
 	
 	enemies.push_back(new SimpleEnemy(Vector2f(25, 45), 1, 25, Vector3f(0, 0, 1), SimpleEnemy::Axis::xAxis));
 	enemies.push_back(new SimpleEnemy(Vector2f(25, 25), 2, 25, Vector3f(0, 1, 1), SimpleEnemy::Axis::yAxis));
+	enemies.push_back(new SimpleEnemy(Vector2f(10, 30), 1, 30, Vector3f(1, 1, 1), SimpleEnemy::Axis::xAxis));
+	enemies.push_back(new SimpleEnemy(Vector2f(13, 25), 0.95f, 12, Vector3f(1, 0, 1), SimpleEnemy::Axis::yAxis));
+	enemies.push_back(new SimpleEnemy(Vector2f(13, 28), 0.5f, 1, Vector3f(1, 1, 1), SimpleEnemy::Axis::xAxis));
+	enemies.push_back(new SimpleEnemy(Vector2f(5, 36), 1.5f, 35, Vector3f(1, 0, 1), SimpleEnemy::Axis::yAxis));
+
 	player->bindVertexAttributes(shader.getAttributeLocation("position"));
 	player->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"), shader.getUniformLocation("color"));
 
@@ -111,6 +116,7 @@ void update() {
 				bullets.erase(bullets.begin() + i);
 				enemies[j]->clear();
 				enemies.erase(enemies.begin() + j);
+				break;
 			}
 		}
 	}
