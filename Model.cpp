@@ -201,3 +201,19 @@ void SimpleEnemy::move(float dx,float dy,float deltaTime) {
 void SimpleEnemy::moveEnemy(float deltaTime) {
 	move(0, 0, deltaTime);
 }
+
+FollowEnemy::FollowEnemy(const Vector2f& pos, float scale, float speed, const Vector3f& color,DynamicModel2D* player) :Enemy(pos, Vector2f(0, 1), scale, speed, color) {
+	this->player = player;
+	frontVector = pos-player->getPosition();
+}
+
+void FollowEnemy::move(float dx, float dy, float deltaTime) {
+	frontVector = player->getPosition() - position;
+	frontVector.normalize();
+	this->position.x += frontVector.x*speed*deltaTime;
+	this->position.y += frontVector.y*speed*deltaTime;
+}
+
+void FollowEnemy::moveEnemy(float deltaTime) {
+	move(0, 0, deltaTime);
+}

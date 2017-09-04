@@ -20,14 +20,14 @@ void receiveInput(GLFWwindow* window) {
 	if (state == GLFW_PRESS) {
 		KEY_W = true;
 	}
-	if (state == GLFW_RELEASE) {
+	else if (state == GLFW_RELEASE) {
 		KEY_W = false;
 	}
 	state = glfwGetKey(window, GLFW_KEY_S);
 	if (state == GLFW_PRESS) {
 		KEY_S = true;
 	}
-	if (state == GLFW_RELEASE) {
+	else if (state == GLFW_RELEASE) {
 		KEY_S = false;
 	}
 
@@ -35,7 +35,7 @@ void receiveInput(GLFWwindow* window) {
 	if (state == GLFW_PRESS) {
 		KEY_A = true;
 	}
-	if (state == GLFW_RELEASE) {
+	else if (state == GLFW_RELEASE) {
 		KEY_A = false;
 	}
 
@@ -43,7 +43,7 @@ void receiveInput(GLFWwindow* window) {
 	if (state == GLFW_PRESS) {
 		KEY_D = true;
 	}
-	if (state == GLFW_RELEASE) {
+	else if (state == GLFW_RELEASE) {
 		KEY_D = false;
 	}
 
@@ -51,7 +51,7 @@ void receiveInput(GLFWwindow* window) {
 	if (state == GLFW_PRESS) {
 		KEY_SPACE = true;
 	}
-	if (state == GLFW_RELEASE) {
+	else if (state == GLFW_RELEASE) {
 		KEY_SPACE = false;
 	}
 
@@ -59,7 +59,7 @@ void receiveInput(GLFWwindow* window) {
 	if (state == GLFW_PRESS) {
 		KEY_RIGHT = true;
 	}
-	if (state == GLFW_RELEASE) {
+	else if (state == GLFW_RELEASE) {
 		KEY_RIGHT = false;
 	}
 
@@ -67,7 +67,7 @@ void receiveInput(GLFWwindow* window) {
 	if (state == GLFW_PRESS) {
 		KEY_LEFT = true;
 	}
-	if (state == GLFW_RELEASE) {
+	else if (state == GLFW_RELEASE) {
 		KEY_LEFT = false;
 	}
 }

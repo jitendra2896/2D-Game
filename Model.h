@@ -88,3 +88,12 @@ private:
 	int xDirection, yDirection;
 	void move(float dx, float dy, float deltaTime);
 };
+
+class FollowEnemy : public Enemy {
+private:
+	DynamicModel2D* player;
+	void move(float dx, float dy, float deltaTime);
+public:
+	FollowEnemy(const Vector2f& pos, float scale, float speed, const Vector3f& color,DynamicModel2D* player);
+	void moveEnemy(float deltaTime);
+};

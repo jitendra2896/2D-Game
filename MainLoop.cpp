@@ -28,12 +28,12 @@ void init() {
 	registerInput(window);
 	glClearColor(0, 0, 0, 0);
 	
-	enemies.push_back(new SimpleEnemy(Vector2f(25, 45), 1, 25, Vector3f(0, 0, 1), SimpleEnemy::Axis::xAxis));
+	enemies.push_back(new FollowEnemy(Vector2f(25, 45), 1, 25, Vector3f(0, 0, 1), player));
 	enemies.push_back(new SimpleEnemy(Vector2f(25, 25), 2, 25, Vector3f(0, 1, 1), SimpleEnemy::Axis::yAxis));
 	enemies.push_back(new SimpleEnemy(Vector2f(10, 30), 1, 30, Vector3f(1, 1, 1), SimpleEnemy::Axis::xAxis));
 	enemies.push_back(new SimpleEnemy(Vector2f(13, 25), 0.95f, 12, Vector3f(1, 0, 1), SimpleEnemy::Axis::yAxis));
 	enemies.push_back(new SimpleEnemy(Vector2f(13, 28), 0.5f, 1, Vector3f(1, 1, 1), SimpleEnemy::Axis::xAxis));
-	enemies.push_back(new SimpleEnemy(Vector2f(5, 36), 1.5f, 35, Vector3f(1, 0, 1), SimpleEnemy::Axis::yAxis));
+	enemies.push_back(new FollowEnemy(Vector2f(0, 0), 1.5f, 30, Vector3f(1, 0.5f, 0.2f), player));
 
 	player->bindVertexAttributes(shader.getAttributeLocation("position"));
 	player->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"), shader.getUniformLocation("color"));
@@ -111,7 +111,7 @@ void update() {
 	
 	for (int i = 0; i < bullets.size(); i++) {
 		for (int j = 0; j < enemies.size(); j++) {
-			if (enemyAndBullet(enemies[j], &bullets[i])) {
+			if (checkCollision(enemies[j], &bullets[i])) {
 				bullets[i].clear();
 				bullets.erase(bullets.begin() + i);
 				enemies[j]->clear();

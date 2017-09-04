@@ -1,7 +1,7 @@
 #include"CollisionDetection.h"
 #include"Math.h"
 #include<iostream>
-bool enemyAndBullet(Enemy* enemy, Bullet* bullet) {
+bool checkCollision(Model2D* enemy, Model2D* bullet) {
 	
 	glm::mat4 enemyTransformationMatrix = enemy->createTransformationMatrix();
 	glm::mat4 bulletTransformationMatrix = bullet->createTransformationMatrix();
@@ -23,8 +23,4 @@ bool enemyAndBullet(Enemy* enemy, Bullet* bullet) {
 		return true;
 	}
 	return false;
-}
-
-bool enemyAndPlayer(Enemy* enemy, Player* player) {
-	return true;
 }

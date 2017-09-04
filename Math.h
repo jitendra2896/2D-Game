@@ -3,6 +3,7 @@
 #define HELLO
 
 #include<glm.hpp>
+#include<math.h>
 class Vector3f {
 public:
 	float x, y, z;
@@ -68,6 +69,20 @@ public:
 
 	Vector2f operator*(float m) {
 		return Vector2f(x*m, y*m);
+	}
+
+	Vector2f operator-(const Vector2f& v) const {
+		return Vector2f(x - v.x, y - v.y);
+	}
+
+	float length() {
+		return std::sqrt(x*x + y*y);
+	}
+
+	void normalize() {
+		float len = length();
+		this->x = x / len;
+		this->y = y / len;
 	}
 
 	bool isZeroVector() {
