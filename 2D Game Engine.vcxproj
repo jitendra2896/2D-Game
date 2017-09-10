@@ -150,17 +150,21 @@
   <ItemGroup>
     <ClCompile Include="BaseShaderProgram.cpp" />
     <ClCompile Include="CollisionDetection.cpp" />
+    <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MainLoop.cpp" />
     <ClCompile Include="StaticShader.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionDetection.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="lodepng.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="fragmentShader.txt" />
