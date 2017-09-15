@@ -10,6 +10,8 @@ private:
 	int loadShader(std::string shaderSource, int type);
 	int linkProgram();
 	void deleteShaders();
+	std::string vertexShaderFile;
+	std::string fragmentShaderFile;
 
 public:
 	ShaderProgram(std::string vertexShaderFile, std::string fragmentShaderFile);
@@ -22,4 +24,9 @@ public:
 class StaticShader : public ShaderProgram {
 public:
 	StaticShader();
+};
+
+class StaticShader2 :public ShaderProgram {
+public:
+	StaticShader2();
 };

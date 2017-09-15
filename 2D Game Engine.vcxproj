@@ -154,6 +154,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MainLoop.cpp" />
     <ClCompile Include="StaticShader.cpp" />
+    <ClCompile Include="StaticShader2.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -168,7 +169,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="fragmentShader.txt" />
+    <Text Include="fragmentShader2.txt" />
     <Text Include="vertexShader.txt" />
+    <Text Include="vertexShader2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,15 +1,11 @@
 #version 430
 
 in vec2 position;
-in vec2 texCoords;
-
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 
-out vec2 texCoordsOut;
-
 void main(){
-	texCoordsOut = texCoords;
+
 	vec4 pos = vec4(position,0,1);
 	gl_Position = projectionMatrix*transformationMatrix*pos;
 }

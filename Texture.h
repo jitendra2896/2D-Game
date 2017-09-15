@@ -11,6 +11,9 @@ class Texture {
 	void createTexture();
 public:
 	Texture(std::string fileName, int width, int height);
+	Texture() {
+
+	}
 	void bindTexture();
 	void cleanUp();
 };

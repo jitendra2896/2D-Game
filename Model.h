@@ -2,17 +2,23 @@
 #include"Math.h"
 #include<glm.hpp>
 #include<gtc\matrix_transform.hpp>
+#include"Texture.h"
 class Model2D {
 private:
 	float vertices[8];
+	float textureCoordinates[8];
 	void loadDataToBuffers();
 
 protected:
+
+	Texture texture;
+	bool hasTexture = false;
 	Vector2f position;
 	float scale;
 	Vector2f frontVector;
 	float angle;
 	unsigned int vboId;
+	unsigned int vboIdTex;
 	unsigned int vaoId;
 	int uniformProjectionMatrixLocation;
 	int uniformTransformationMatrixLocation;
@@ -24,13 +30,17 @@ protected:
 
 public:
 	Model2D(const Vector2f& pos, const Vector2f& fv,float scale,const Vector3f& color);
+	Model2D(const Vector2f& pos, const Vector2f& fv, float scale, Texture& texture);
+	Model2D(const Vector2f& pos, const Vector2f& fv, float scale, Texture& texture, float* textureCoordinates);
 	void bindVertexAttributes(int vPosition);
+	void bindVertexAttributes(int vPosition, int vTexCoords);
 	Vector2f getPosition();
 	Vector2f getFrontVector();
 	float getScale();
 	void clear();
 	bool isVisible();
 	void setUniformMatrixLocation(int pml, int tml,int cl);
+	void setUniformMatrixLocation(int pml, int tml);
 	glm::mat4 createTransformationMatrix();
 	virtual void render() = 0;
 };
@@ -38,6 +48,7 @@ public:
 class StaticModel2D : public Model2D {
 public:
 	StaticModel2D(const Vector2f& pos,float scale,const Vector3f& color);
+	StaticModel2D(const Vector2f& pos, float scale, Texture& texture);
 	void render();
 
 };
@@ -48,6 +59,7 @@ protected:
 	float rotationSpeed;
 public:
 	DynamicModel2D(const Vector2f& pos, const Vector2f& fv,float scale, float speed,float rotationSpeed,const Vector3f& color);
+	DynamicModel2D(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, Texture& texture);
 	void render();
 	virtual void move(float dx,float dy,float deltaTime) = 0;
 	void rotate(int angle,float deltaTime);
@@ -56,6 +68,7 @@ public:
 class Player : public DynamicModel2D {
 public:
 	Player(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, const Vector3f& color);
+	Player(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, Texture& texture);
 	void move(float dx, float dy, float deltaTime);
 };
 

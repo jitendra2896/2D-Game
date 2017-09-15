@@ -7,8 +7,8 @@ using namespace std;
 
 
 ShaderProgram::ShaderProgram(string vertexShaderFile, string fragmentShaderFile) {
-	cout << vertexShaderFile << endl;
-	cout << fragmentShaderFile << endl;
+	this->vertexShaderFile = vertexShaderFile;
+	this->fragmentShaderFile = fragmentShaderFile;
 	vertexShaderId = loadShader(parseShader(vertexShaderFile), GL_VERTEX_SHADER);
 	fragmentShaderId = loadShader(parseShader(fragmentShaderFile), GL_FRAGMENT_SHADER);
 	programId = linkProgram();
@@ -31,7 +31,7 @@ int ShaderProgram::loadShader(string source, int shaderType) {
 		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length);
 		char* compilationMessage = new char[length];
 		glGetShaderInfoLog(shaderId, length, &length, compilationMessage);
-		cout << "Cannot Compile Shader: " << compilationMessage;
+		cout << "Cannot Compile Shader: "<<((shaderType == GL_VERTEX_SHADER)?vertexShaderFile:fragmentShaderFile)<<"  " << compilationMessage;
 		delete[] compilationMessage;
 		glDeleteShader(shaderId);
 		return 0;

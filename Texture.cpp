@@ -8,6 +8,9 @@ Texture::Texture(std::string fileName, int width, int height) {
 	this->fileName = fileName;
 	this->width = width;
 	this->height = height;
+
+	decodeFile();
+	createTexture();
 }
 
 void Texture::decodeFile() {
@@ -20,11 +23,12 @@ void Texture::decodeFile() {
 void Texture::createTexture() {
 	glGenBuffers(1, &texVboId);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, texVboId);
+	std::cout << sizeof(unsigned char)*decodedImage.size();
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, sizeof(unsigned char)*decodedImage.size(), &decodedImage[0], GL_STATIC_DRAW);
 
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);
-	glTexStorage2D(GL_TEXTURE_2D, 10, GL_RGBA8, width, height);
+	glTexStorage2D(GL_TEXTURE_2D, 8, GL_RGBA8, width, height);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

@@ -36,6 +36,55 @@ Model2D::Model2D(const Vector2f& pos, const Vector2f& fv,float scale, const Vect
 	loadDataToBuffers();
 }
 
+Model2D::Model2D(const Vector2f& pos, const Vector2f& fv, float scale, Texture& texture){
+	
+	this->position = pos;
+	this->frontVector = fv;
+	this->scale = scale;
+
+	vertices[0] = -1;
+	vertices[1] = 1;
+	vertices[2] = -1;
+	vertices[3] = -1;
+	vertices[4] = 1;
+	vertices[5] = 1;
+	vertices[6] = 1;
+	vertices[7] = -1;
+
+	this->texture = texture;
+
+	textureCoordinates[0] = 0;
+	textureCoordinates[1] = 0;
+	textureCoordinates[2] = 0;
+	textureCoordinates[3] = 1;
+	textureCoordinates[4] = 1;
+	textureCoordinates[5] = 0;
+	textureCoordinates[6] = 1;
+	textureCoordinates[7] = 1;
+
+	hasTexture = true;
+	loadDataToBuffers();
+}
+Model2D::Model2D(const Vector2f& pos, const Vector2f& fv, float scale, Texture& texture, float* textureCoordinates){
+	this->position = pos;
+	this->frontVector = fv;
+	this->scale = scale;
+	this->color = color;
+	vertices[0] = -1;
+	vertices[1] = 1;
+	vertices[2] = -1;
+	vertices[3] = -1;
+	vertices[4] = 1;
+	vertices[5] = 1;
+	vertices[6] = 1;
+	vertices[7] = -1;
+
+	this->texture = texture;
+
+	hasTexture = true;
+	loadDataToBuffers();
+	//this->textureCoordinates = textureCoordinates;
+}
 Vector2f Model2D::getPosition() {
 	return position;
 }
@@ -55,6 +104,13 @@ void Model2D::loadDataToBuffers() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	this->vboId = vboId;
+	if (hasTexture) {
+		glGenBuffers(1, &vboId);
+		glBindBuffer(GL_ARRAY_BUFFER, vboId);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, textureCoordinates, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		this->vboIdTex = vboId;
+	}
 }
 
 void Model2D::bindVertexAttributes(int vPosition) {
@@ -65,7 +121,18 @@ void Model2D::bindVertexAttributes(int vPosition) {
 	glVertexAttribPointer(vPosition, 2, GL_FLOAT, false, 0, 0);
 	glEnableVertexAttribArray(vPosition);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	this->vaoId = vaoId;
+}
+
+void Model2D::bindVertexAttributes(int vPosition, int vTexCoords) {
+	bindVertexAttributes(vPosition);
+	glBindVertexArray(vaoId);
+	glBindBuffer(GL_ARRAY_BUFFER, vboIdTex);
+	glVertexAttribPointer(vTexCoords, 2, GL_FLOAT, false, 0, 0);
+	glEnableVertexAttribArray(vTexCoords);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 glm::mat4 Model2D::createProjectionMatrix() {
@@ -86,6 +153,11 @@ void Model2D::setUniformMatrixLocation(int pml, int tml,int cl) {
 	uniformProjectionMatrixLocation = pml;
 	uniformTransformationMatrixLocation = tml;
 	uniformColorLocation = cl;
+}
+
+void Model2D::setUniformMatrixLocation(int pml, int tml) {
+	uniformProjectionMatrixLocation = pml;
+	uniformTransformationMatrixLocation = tml;
 }
 
 bool Model2D::isVisible() {
@@ -123,11 +195,18 @@ DynamicModel2D::DynamicModel2D(const Vector2f& pos,const Vector2f& fv,float scal
 	angle = 0.0f;
 }
 
+DynamicModel2D::DynamicModel2D(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, Texture& texture):Model2D(pos,fv,scale,texture) {
+	this->speed = speed;
+	this->rotationSpeed = rotationSpeed;
+	angle = 0.0f;
+}
+
 void DynamicModel2D::move(float dx, float dy,float deltaTime) {
 	position.x += dx*deltaTime*speed;
 	position.y += dy*deltaTime*speed;
 	position.x = clamp(position.x, 1, 49);
 	position.y = clamp(position.y, 1, 49);
+
 }
 
 void DynamicModel2D::rotate(int angle,float deltaTime) {
@@ -135,17 +214,25 @@ void DynamicModel2D::rotate(int angle,float deltaTime) {
 }
 
 void DynamicModel2D::render() {
+	if (hasTexture) {
+		texture.bindTexture();
+	}
 	glBindVertexArray(vaoId);
 	projectionMatrix = createProjectionMatrix();
 	transformationMatrix = createTransformationMatrix();
 	glUniformMatrix4fv(uniformProjectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
 	glUniformMatrix4fv(uniformTransformationMatrixLocation, 1, GL_FALSE, &transformationMatrix[0][0]);
-	glUniform4f(uniformColorLocation, color.x, color.y, color.z, 1.0f);
+	if(!hasTexture)
+		glUniform4f(uniformColorLocation, color.x, color.y, color.z, 1.0f);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Player::Player(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, const Vector3f& color) :DynamicModel2D(pos, fv, scale, speed, rotationSpeed, color) {
+
+}
+Player::Player(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, Texture& texture): DynamicModel2D(pos,fv,scale,speed,rotationSpeed,texture){
 
 }
 
@@ -154,6 +241,7 @@ void Player::move(float dx, float dy, float deltaTime) {
 	position.y += dy*deltaTime*speed;
 	position.x = clamp(position.x, 1, 49);
 	position.y = clamp(position.y, 1, 49);
+
 }
 
 Bullet::Bullet(const Vector2f& position, const Vector2f& direction,float scale, float speed, const Vector3f& color) :DynamicModel2D(position, Vector2f(0, 0),scale, speed, 0,color) {
