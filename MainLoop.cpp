@@ -18,7 +18,11 @@ const float PER_BULLET_TIME = 1.0f / BULLET_FIRE_RATE;
 float lastShootTime = 0;
 
 Display* window = Display::createDisplay(600, 600, "Hello World");
-DynamicModel2D* player = new Player(Vector2f(25, 25),Vector2f(0,1),20,50, 200,Texture("wall.png",512,512));
+DynamicModel2D* player = new Player(Vector2f(25, 25),Vector2f(0,1),3,50, 200,Texture("spider03.png",640,320));
+std::vector<float> bTexCoords = { 0,0,0,1,1,0,1,1 };
+std::vector<float> eTexCoords = { 0,0,0,1,64.0f / 512.0f,0,64.0f / 512.0f,1 };
+StaticModel2D* background = new StaticModel2D(Vector2f(25, 25), 25, Texture("background_grass.png", 640, 640),bTexCoords);
+
 std::vector<Bullet> bullets;
 std::vector<Enemy*> enemies;
 
@@ -29,21 +33,24 @@ void init() {
 	registerInput(window);
 	glClearColor(0, 0, 0, 0);
 	
-	enemies.push_back(new FollowEnemy(Vector2f(25, 45), 1, 25, Vector3f(0, 0, 1), player));
-	enemies.push_back(new SimpleEnemy(Vector2f(25, 25), 2, 25, Vector3f(0, 1, 1), SimpleEnemy::Axis::yAxis));
-	enemies.push_back(new SimpleEnemy(Vector2f(10, 30), 1, 30, Vector3f(1, 1, 1), SimpleEnemy::Axis::xAxis));
-	enemies.push_back(new SimpleEnemy(Vector2f(13, 25), 0.95f, 12, Vector3f(1, 0, 1), SimpleEnemy::Axis::yAxis));
-	enemies.push_back(new SimpleEnemy(Vector2f(13, 28), 0.5f, 1, Vector3f(1, 1, 1), SimpleEnemy::Axis::xAxis));
-	enemies.push_back(new FollowEnemy(Vector2f(0, 0), 1.5f, 30, Vector3f(1, 0.5f, 0.2f), player));
+	background->bindVertexAttributes(shader.getAttributeLocation("position"), shader.getAttributeLocation("texCoords"));
+	background->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader2.getUniformLocation("transformationMatrix"));
+
+	enemies.push_back(new FollowEnemy(Vector2f(25, 45), 2, 25, Texture("enemy.png",512,64), eTexCoords, player));
+	enemies.push_back(new SimpleEnemy(Vector2f(25, 25), 2, 40, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::yAxis));
+	enemies.push_back(new SimpleEnemy(Vector2f(10, 30), 1, 30, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::xAxis));
+	enemies.push_back(new SimpleEnemy(Vector2f(13, 25), 0.95f, 12, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::yAxis));
+	enemies.push_back(new SimpleEnemy(Vector2f(13, 28), 1.0f, 1, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::xAxis));
+	enemies.push_back(new FollowEnemy(Vector2f(0, 0), 2, 30, Texture("enemy.png", 512, 64), eTexCoords, player));
 
 	player->bindVertexAttributes(shader.getAttributeLocation("position"),shader.getAttributeLocation("texCoords"));
 	player->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"));
 
 	for (int i = 0; i < enemies.size(); i++) {
-		enemies[i]->bindVertexAttributes(shader2.getAttributeLocation("position"));
-		enemies[i]->bindVertexAttributes(shader2.getAttributeLocation("position"));
-		enemies[i]->setUniformMatrixLocation(shader2.getUniformLocation("projectionMatrix"), shader2.getUniformLocation("transformationMatrix"), shader2.getUniformLocation("color"));
-		enemies[i]->setUniformMatrixLocation(shader2.getUniformLocation("projectionMatrix"), shader2.getUniformLocation("transformationMatrix"), shader2.getUniformLocation("color"));
+		enemies[i]->bindVertexAttributes(shader.getAttributeLocation("position"),shader.getAttributeLocation("texCoords"));
+		enemies[i]->bindVertexAttributes(shader.getAttributeLocation("position"),shader.getAttributeLocation("texCoords"));
+		enemies[i]->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"));
+		enemies[i]->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"));
 	}
 }
 
@@ -132,11 +139,12 @@ void update() {
 void render() {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	shader.useProgram();
+	background->render();
 	player->render();
-	shader2.useProgram();
 	for (int i = 0; i < enemies.size(); i++) {
 		enemies[i]->render();
 	}
+	shader2.useProgram();
 	for (int i = 0; i < bullets.size(); i++) {
 		bullets[i].setUniformMatrixLocation(shader2.getUniformLocation("projectionMatrix"), shader2.getUniformLocation("transformationMatrix"), shader2.getUniformLocation("color"));
 		bullets[i].shoot(TIME_PER_FRAME);
@@ -145,7 +153,9 @@ void render() {
 }
 
 int main(int argc, char** argv) {
-	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_MULTISAMPLE); 
+	glEnable(GL_BLEND); 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	init();
 	while (!glfwWindowShouldClose(window->getGLFWWindow())) {
 		render();

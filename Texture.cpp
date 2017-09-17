@@ -23,7 +23,6 @@ void Texture::decodeFile() {
 void Texture::createTexture() {
 	glGenBuffers(1, &texVboId);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, texVboId);
-	std::cout << sizeof(unsigned char)*decodedImage.size();
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, sizeof(unsigned char)*decodedImage.size(), &decodedImage[0], GL_STATIC_DRAW);
 
 	glGenTextures(1, &textureId);
@@ -43,5 +42,7 @@ void Texture::bindTexture() {
 }
 
 void Texture::cleanUp() {
+	glDeleteBuffers(1, &texVboId);
+	glDeleteTextures(1, &textureId);
 	decodedImage.clear();
 }

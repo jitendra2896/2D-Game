@@ -3,10 +3,11 @@
 #include<glm.hpp>
 #include<gtc\matrix_transform.hpp>
 #include"Texture.h"
+#include <vector>
 class Model2D {
 private:
 	float vertices[8];
-	float textureCoordinates[8];
+	std::vector<float> textureCoordinates = std::vector<float>(8);
 	void loadDataToBuffers();
 
 protected:
@@ -31,7 +32,7 @@ protected:
 public:
 	Model2D(const Vector2f& pos, const Vector2f& fv,float scale,const Vector3f& color);
 	Model2D(const Vector2f& pos, const Vector2f& fv, float scale, Texture& texture);
-	Model2D(const Vector2f& pos, const Vector2f& fv, float scale, Texture& texture, float* textureCoordinates);
+	Model2D(const Vector2f& pos, const Vector2f& fv, float scale, Texture& texture, std::vector<float>& textureCoordinates);
 	void bindVertexAttributes(int vPosition);
 	void bindVertexAttributes(int vPosition, int vTexCoords);
 	Vector2f getPosition();
@@ -49,6 +50,7 @@ class StaticModel2D : public Model2D {
 public:
 	StaticModel2D(const Vector2f& pos,float scale,const Vector3f& color);
 	StaticModel2D(const Vector2f& pos, float scale, Texture& texture);
+	StaticModel2D(const Vector2f& pos, float scale, Texture& texture,std::vector<float>& textureCoordinates);
 	void render();
 
 };
@@ -60,6 +62,7 @@ protected:
 public:
 	DynamicModel2D(const Vector2f& pos, const Vector2f& fv,float scale, float speed,float rotationSpeed,const Vector3f& color);
 	DynamicModel2D(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, Texture& texture);
+	DynamicModel2D(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, Texture& texture,std::vector<float>& texCoords);
 	void render();
 	virtual void move(float dx,float dy,float deltaTime) = 0;
 	void rotate(int angle,float deltaTime);
@@ -84,6 +87,8 @@ public:
 class Enemy : public DynamicModel2D {
 public:
 	Enemy(const Vector2f& pos, const Vector2f& fv, float scale, float speed,const Vector3f& color);
+	Enemy(const Vector2f& pos, const Vector2f& fv, float scale, float speed, Texture& texture);
+	Enemy(const Vector2f& pos, const Vector2f& fv, float scale, float speed, Texture& texture,std::vector<float>& texCoords);
 	virtual void moveEnemy(float deltaTime) = 0;
 };
 
@@ -95,6 +100,8 @@ public:
 		xAxis, yAxis
 	};
 	SimpleEnemy(const Vector2f& pos, float scale, float speed, const Vector3f& color, Axis axis);
+	SimpleEnemy(const Vector2f& pos, float scale, float speed, Texture& texture, Axis axis);
+	SimpleEnemy(const Vector2f& pos, float scale, float speed, Texture& texture,std::vector<float>& texCoords, Axis axis);
 	void moveEnemy(float deltaTime);
 private:
 	Axis axis;
@@ -108,5 +115,7 @@ private:
 	void move(float dx, float dy, float deltaTime);
 public:
 	FollowEnemy(const Vector2f& pos, float scale, float speed, const Vector3f& color,DynamicModel2D* player);
+	FollowEnemy(const Vector2f& pos, float scale, float speed, Texture& texture, DynamicModel2D* player);
+	FollowEnemy(const Vector2f& pos, float scale, float speed, Texture& texture,std::vector<float>& texCoords, DynamicModel2D* player);
 	void moveEnemy(float deltaTime);
 };
