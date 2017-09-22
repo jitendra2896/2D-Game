@@ -12,7 +12,7 @@
 const int MAX_BULLETS = 4;
 const float TIME_PER_FRAME = 1.0f / 60.0f;
 float expected_frame_end = glfwGetTime() + TIME_PER_FRAME;
-
+unsigned int no_of_frames = 0;
 const int BULLET_FIRE_RATE = 5;
 const float PER_BULLET_TIME = 1.0f / BULLET_FIRE_RATE;
 float lastShootTime = 0;
@@ -133,7 +133,7 @@ void update() {
 		enemies[i]->moveEnemy(TIME_PER_FRAME);
 	}
 	player->rotate(rot,TIME_PER_FRAME);
-	player->move(playerX, playerY, TIME_PER_FRAME);
+	dynamic_cast<Player*>(player)->move(playerX, playerY, TIME_PER_FRAME,no_of_frames);
 }
 
 void render() {
@@ -150,6 +150,7 @@ void render() {
 		bullets[i].shoot(TIME_PER_FRAME);
 	}
 	shader2.stopProgram();
+	(no_of_frames++)%60;
 }
 
 int main(int argc, char** argv) {

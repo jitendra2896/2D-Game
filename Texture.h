@@ -14,6 +14,10 @@ public:
 	Texture() {
 
 	}
+
+	int getWidth();
+	int getHeight();
+
 	void bindTexture();
 	void cleanUp();
 };

@@ -69,10 +69,22 @@ public:
 };
 
 class Player : public DynamicModel2D {
+
+private:
+
+	float currentX = 0.0f;
+	float currentY = 0.0f;
+	float SINGLE_TEX_WIDTH = 64.0f;
+	float SINGLE_TEX_HEIGHT = 64.0f;
+	std::vector<float> standingTextureCoordinates = {0,0,0,64.0f / 320.0f ,64.0f / 640.0f ,0,64.0f / 640.0f ,64.0f / 320.f };
+	std::vector<float> movingTextureCoordinates = standingTextureCoordinates;
+
+	void updateTextureCoordinates(std::vector<float>& texCoords);
 public:
 	Player(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, const Vector3f& color);
 	Player(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, Texture& texture);
 	void move(float dx, float dy, float deltaTime);
+	void move(float dx, float dy, float deltaTime, int frames);
 };
 
 class Bullet : public DynamicModel2D {

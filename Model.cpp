@@ -260,7 +260,41 @@ void Player::move(float dx, float dy, float deltaTime) {
 	position.y += dy*deltaTime*speed;
 	position.x = clamp(position.x, 0+scale, 50-scale);
 	position.y = clamp(position.y, 0+scale, 50-scale);
+}
 
+void Player::move(float dx, float dy, float deltaTime,int frames) {
+	position.x += dx*deltaTime*speed;
+	position.y += dy*deltaTime*speed;
+	position.x = clamp(position.x, 0 + scale, 50 - scale);
+	position.y = clamp(position.y, 0 + scale, 50 - scale);
+
+	if (dx == 0 && dy == 0) {
+		glBindBuffer(GL_ARRAY_BUFFER, vboIdTex);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*standingTextureCoordinates.size(), &standingTextureCoordinates[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+	else {
+		if (frames % 6 == 0) {
+			updateTextureCoordinates(movingTextureCoordinates);
+			glBindBuffer(GL_ARRAY_BUFFER, vboIdTex);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*movingTextureCoordinates.size(), &movingTextureCoordinates[0]);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		}
+	}
+}
+
+void Player::updateTextureCoordinates(std::vector<float>& texCoords) {
+	currentX = ((int)(currentX + SINGLE_TEX_WIDTH)) % texture.getWidth();
+	currentY = ((int)(currentY + SINGLE_TEX_HEIGHT)) % texture.getHeight();
+
+	movingTextureCoordinates[0] = currentX/texture.getWidth();
+	movingTextureCoordinates[1] = 0.0f;
+	movingTextureCoordinates[2] = currentX / texture.getWidth();
+	movingTextureCoordinates[3] = 64.0f/texture.getHeight();
+	movingTextureCoordinates[4] = (currentX + 64.0f) / texture.getWidth();
+	movingTextureCoordinates[5] = 0.0f;
+	movingTextureCoordinates[6] = (currentX + 64.0f) / texture.getWidth();
+	movingTextureCoordinates[7] = 64.0f / texture.getHeight();
 }
 
 Bullet::Bullet(const Vector2f& position, const Vector2f& direction,float scale, float speed, const Vector3f& color) :DynamicModel2D(position, Vector2f(0, 0),scale, speed, 0,color) {

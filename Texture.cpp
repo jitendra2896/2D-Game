@@ -37,6 +37,14 @@ void Texture::createTexture() {
 
 }
 
+int Texture::getHeight() {
+	return height;
+}
+
+int Texture::getWidth() {
+	return width;
+}
+
 void Texture::bindTexture() {
 	glBindTexture(GL_TEXTURE_2D, textureId);
 }
