@@ -17,8 +17,8 @@ const int BULLET_FIRE_RATE = 5;
 const float PER_BULLET_TIME = 1.0f / BULLET_FIRE_RATE;
 float lastShootTime = 0;
 
-Display* window = Display::createDisplay(600, 600, "Hello World");
-DynamicModel2D* player = new Player(Vector2f(25, 25),Vector2f(0,1),3,50, 200,Texture("spider03.png",640,320));
+Display* window = Display::createDisplay(1000, 1000, "Hello World");
+DynamicModel2D* player = new Player(Vector2f(25, 25),Vector2f(0,1),3,5, 200,Texture("spider03.png",640,320));
 std::vector<float> bTexCoords = { 0,0,0,1,1,0,1,1 };
 std::vector<float> eTexCoords = { 0,0,0,1,64.0f / 512.0f,0,64.0f / 512.0f,1 };
 StaticModel2D* background = new StaticModel2D(Vector2f(25, 25), 25, Texture("background_grass.png", 640, 640),bTexCoords);

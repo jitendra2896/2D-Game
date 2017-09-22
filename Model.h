@@ -78,7 +78,7 @@ private:
 	float SINGLE_TEX_HEIGHT = 64.0f;
 	std::vector<float> standingTextureCoordinates = {0,0,0,64.0f / 320.0f ,64.0f / 640.0f ,0,64.0f / 640.0f ,64.0f / 320.f };
 	std::vector<float> movingTextureCoordinates = standingTextureCoordinates;
-
+	bool movedInPreviousFrame;
 	void updateTextureCoordinates(std::vector<float>& texCoords);
 public:
 	Player(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, const Vector3f& color);

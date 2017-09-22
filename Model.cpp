@@ -249,10 +249,10 @@ void DynamicModel2D::render() {
 }
 
 Player::Player(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, const Vector3f& color) :DynamicModel2D(pos, fv, scale, speed, rotationSpeed, color) {
-
+	movedInPreviousFrame = false;
 }
 Player::Player(const Vector2f& pos, const Vector2f& fv, float scale, float speed, float rotationSpeed, Texture& texture): DynamicModel2D(pos,fv,scale,speed,rotationSpeed,texture){
-
+	movedInPreviousFrame = false;
 }
 
 void Player::move(float dx, float dy, float deltaTime) {
@@ -268,17 +268,20 @@ void Player::move(float dx, float dy, float deltaTime,int frames) {
 	position.x = clamp(position.x, 0 + scale, 50 - scale);
 	position.y = clamp(position.y, 0 + scale, 50 - scale);
 
-	if (dx == 0 && dy == 0) {
+	if (dx == 0 && dy == 0 && movedInPreviousFrame) {
 		glBindBuffer(GL_ARRAY_BUFFER, vboIdTex);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*standingTextureCoordinates.size(), &standingTextureCoordinates[0]);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		movingTextureCoordinates = standingTextureCoordinates;
+		movedInPreviousFrame = false;
 	}
-	else {
+	else if(dx != 0 || dy != 0){
 		if (frames % 6 == 0) {
 			updateTextureCoordinates(movingTextureCoordinates);
 			glBindBuffer(GL_ARRAY_BUFFER, vboIdTex);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*movingTextureCoordinates.size(), &movingTextureCoordinates[0]);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			movedInPreviousFrame = true;
 		}
 	}
 }
