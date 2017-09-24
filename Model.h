@@ -43,6 +43,7 @@ public:
 	void setUniformMatrixLocation(int pml, int tml,int cl);
 	void setUniformMatrixLocation(int pml, int tml);
 	glm::mat4 createTransformationMatrix();
+	glm::mat4 getTransformationMatrixWithoutRotation();
 	virtual void render() = 0;
 };
 
@@ -97,11 +98,21 @@ public:
 };
 
 class Enemy : public DynamicModel2D {
+protected:
+	float currentX = 0.0f;
+	float currentY = 0.0f;
+	float SINGLE_TEX_WIDTH = 64.0f;
+	float SINGLE_TEX_HEIGHT = 64.0f;
+	std::vector<float> standingTextureCoordinates = { 0,0,0,64.0f / 320.0f ,64.0f / 640.0f ,0,64.0f / 640.0f ,64.0f / 320.f };
+	std::vector<float> movingTextureCoordinates = standingTextureCoordinates;
+
+	void updateTextureCoordinates(std::vector<float>& texCoords);
 public:
 	Enemy(const Vector2f& pos, const Vector2f& fv, float scale, float speed,const Vector3f& color);
 	Enemy(const Vector2f& pos, const Vector2f& fv, float scale, float speed, Texture& texture);
 	Enemy(const Vector2f& pos, const Vector2f& fv, float scale, float speed, Texture& texture,std::vector<float>& texCoords);
 	virtual void moveEnemy(float deltaTime) = 0;
+	virtual void moveEnemy(float deltaTime, int frames) = 0;
 };
 
 class SimpleEnemy :public Enemy {
@@ -115,6 +126,7 @@ public:
 	SimpleEnemy(const Vector2f& pos, float scale, float speed, Texture& texture, Axis axis);
 	SimpleEnemy(const Vector2f& pos, float scale, float speed, Texture& texture,std::vector<float>& texCoords, Axis axis);
 	void moveEnemy(float deltaTime);
+	void moveEnemy(float deltaTime, int frames);
 private:
 	Axis axis;
 	int xDirection, yDirection;
@@ -130,4 +142,5 @@ public:
 	FollowEnemy(const Vector2f& pos, float scale, float speed, Texture& texture, DynamicModel2D* player);
 	FollowEnemy(const Vector2f& pos, float scale, float speed, Texture& texture,std::vector<float>& texCoords, DynamicModel2D* player);
 	void moveEnemy(float deltaTime);
+	void moveEnemy(float deltaTime, int frames);
 };

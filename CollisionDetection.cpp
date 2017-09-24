@@ -3,8 +3,8 @@
 #include<iostream>
 bool checkCollision(Model2D* enemy, Model2D* bullet) {
 	
-	glm::mat4 enemyTransformationMatrix = enemy->createTransformationMatrix();
-	glm::mat4 bulletTransformationMatrix = bullet->createTransformationMatrix();
+	glm::mat4 enemyTransformationMatrix = enemy->getTransformationMatrixWithoutRotation();
+	glm::mat4 bulletTransformationMatrix = bullet->getTransformationMatrixWithoutRotation();
 
 	glm::vec4 eTopLeft = enemyTransformationMatrix*glm::vec4(-1.0f, 1.0f, 0.0f, 1.0f);
 	glm::vec4 eBottomRight = enemyTransformationMatrix*glm::vec4(1.0f, -1.0f, 0.0f, 1.0f);

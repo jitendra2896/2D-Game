@@ -79,6 +79,10 @@ public:
 		return std::sqrt(x*x + y*y);
 	}
 
+	float angle() {
+		return atan2(-x, y);
+	}
+
 	void normalize() {
 		float len = length();
 		this->x = x / len;

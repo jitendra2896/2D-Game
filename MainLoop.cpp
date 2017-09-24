@@ -18,7 +18,7 @@ const float PER_BULLET_TIME = 1.0f / BULLET_FIRE_RATE;
 float lastShootTime = 0;
 
 Display* window = Display::createDisplay(1000, 1000, "Hello World");
-DynamicModel2D* player = new Player(Vector2f(25, 25),Vector2f(0,1),3,5, 200,Texture("spider03.png",640,320));
+DynamicModel2D* player = new Player(Vector2f(25, 25),Vector2f(0,1),3,10, 200,Texture("spider03.png",640,320));
 std::vector<float> bTexCoords = { 0,0,0,1,1,0,1,1 };
 std::vector<float> eTexCoords = { 0,0,0,1,64.0f / 512.0f,0,64.0f / 512.0f,1 };
 StaticModel2D* background = new StaticModel2D(Vector2f(25, 25), 25, Texture("background_grass.png", 640, 640),bTexCoords);
@@ -36,12 +36,12 @@ void init() {
 	background->bindVertexAttributes(shader.getAttributeLocation("position"), shader.getAttributeLocation("texCoords"));
 	background->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader2.getUniformLocation("transformationMatrix"));
 
-	enemies.push_back(new FollowEnemy(Vector2f(25, 45), 2, 25, Texture("enemy.png",512,64), eTexCoords, player));
-	enemies.push_back(new SimpleEnemy(Vector2f(25, 25), 2, 40, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::yAxis));
-	enemies.push_back(new SimpleEnemy(Vector2f(10, 30), 1, 30, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::xAxis));
-	enemies.push_back(new SimpleEnemy(Vector2f(13, 25), 0.95f, 12, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::yAxis));
-	enemies.push_back(new SimpleEnemy(Vector2f(13, 28), 1.0f, 1, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::xAxis));
-	enemies.push_back(new FollowEnemy(Vector2f(0, 0), 2, 30, Texture("enemy.png", 512, 64), eTexCoords, player));
+	enemies.push_back(new FollowEnemy(Vector2f(25, 45), 2, 5, Texture("enemy.png",512,64), eTexCoords, player));
+	enemies.push_back(new SimpleEnemy(Vector2f(25, 25), 2, 5, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::yAxis));
+	enemies.push_back(new SimpleEnemy(Vector2f(10, 30), 1, 5, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::xAxis));
+	enemies.push_back(new SimpleEnemy(Vector2f(13, 25), 0.95f, 5, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::yAxis));
+	enemies.push_back(new SimpleEnemy(Vector2f(13, 28), 1.0f, 5, Texture("enemy.png", 512, 64), eTexCoords, SimpleEnemy::Axis::xAxis));
+	enemies.push_back(new FollowEnemy(Vector2f(0, 0), 4, 5, Texture("enemy.png", 512, 64), eTexCoords, player));
 
 	player->bindVertexAttributes(shader.getAttributeLocation("position"),shader.getAttributeLocation("texCoords"));
 	player->setUniformMatrixLocation(shader.getUniformLocation("projectionMatrix"), shader.getUniformLocation("transformationMatrix"));
@@ -130,7 +130,7 @@ void update() {
 	}
 
 	for (int i = 0; i < enemies.size(); i++) {
-		enemies[i]->moveEnemy(TIME_PER_FRAME);
+		enemies[i]->moveEnemy(TIME_PER_FRAME,no_of_frames);
 	}
 	player->rotate(rot,TIME_PER_FRAME);
 	dynamic_cast<Player*>(player)->move(playerX, playerY, TIME_PER_FRAME,no_of_frames);

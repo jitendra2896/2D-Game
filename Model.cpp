@@ -140,6 +140,13 @@ glm::mat4 Model2D::createProjectionMatrix() {
 	return projectionMatrix;
 }
 
+glm::mat4 Model2D::getTransformationMatrixWithoutRotation() {
+	glm::mat4 translationMatrix = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0));
+	glm::mat4 scaleMatrix = glm::scale(glm::mat4(1), glm::vec3(scale, scale, scale));
+	glm::mat4 transformationMatrix = translationMatrix*scaleMatrix;
+	return transformationMatrix;
+}
+
 glm::mat4 Model2D::createTransformationMatrix() {
 	glm::mat4 translationMatrix = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0));
 	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1), angle, glm::vec3(0, 0, 1));
@@ -323,11 +330,26 @@ Enemy::Enemy(const Vector2f& pos, const Vector2f& fv, float scale, float speed, 
 
 }
 
+void Enemy::updateTextureCoordinates(std::vector<float>& texCoords) {
+	currentX = ((int)(currentX + SINGLE_TEX_WIDTH)) % texture.getWidth();
+	currentY = ((int)(currentY + SINGLE_TEX_HEIGHT)) % texture.getHeight();
+
+	movingTextureCoordinates[0] = currentX / texture.getWidth();
+	movingTextureCoordinates[1] = 0.0f;
+	movingTextureCoordinates[2] = currentX / texture.getWidth();
+	movingTextureCoordinates[3] = 64.0f / texture.getHeight();
+	movingTextureCoordinates[4] = (currentX + 64.0f) / texture.getWidth();
+	movingTextureCoordinates[5] = 0.0f;
+	movingTextureCoordinates[6] = (currentX + 64.0f) / texture.getWidth();
+	movingTextureCoordinates[7] = 64.0f / texture.getHeight();
+}
+
 SimpleEnemy::SimpleEnemy(const Vector2f& position, float scale, float speed, const Vector3f& color,Axis axis) : Enemy(position, Vector2f(0,0), scale, speed, color) {
 	this->axis = axis; 
 	if (axis == Axis::xAxis) {
 		xDirection = 1;
 		yDirection = 0;
+		angle = -90 * 0.0174533;
 	}
 	else {
 		xDirection = 0;
@@ -339,6 +361,7 @@ SimpleEnemy::SimpleEnemy(const Vector2f& pos, float scale, float speed, Texture&
 	if (axis == Axis::xAxis) {
 		xDirection = 1;
 		yDirection = 0;
+		angle = -90 * 0.0174533;
 	}
 	else {
 		xDirection = 0;
@@ -350,6 +373,7 @@ SimpleEnemy::SimpleEnemy(const Vector2f& pos, float scale, float speed, Texture&
 	if (axis == Axis::xAxis) {
 		xDirection = 1;
 		yDirection = 0;
+		angle = -90 * 0.0174533;
 	}
 	else {
 		xDirection = 0;
@@ -360,10 +384,15 @@ SimpleEnemy::SimpleEnemy(const Vector2f& pos, float scale, float speed, Texture&
 void SimpleEnemy::move(float dx,float dy,float deltaTime) {
 	if (position.x >= 49 || position.x <= 1) {
 		xDirection = -xDirection;
+		angle = -xDirection * 90 * 0.0174533;
 	}
 
 	if (position.y >= 49 || position.y <= 1) {
 		yDirection = -yDirection;
+		if (angle >= 179* 0.0174533)
+			angle = 0.0f;
+		else
+			angle = 180 * 0.0174533;
 	}
 	this->position.x += xDirection*speed*deltaTime;
 	this->position.y += yDirection*speed*deltaTime;
@@ -371,6 +400,16 @@ void SimpleEnemy::move(float dx,float dy,float deltaTime) {
 }
 
 void SimpleEnemy::moveEnemy(float deltaTime) {
+	move(0, 0, deltaTime);
+}
+
+void SimpleEnemy::moveEnemy(float deltaTime, int frames) {
+	if (frames % 6 == 0) {
+		updateTextureCoordinates(movingTextureCoordinates);
+		glBindBuffer(GL_ARRAY_BUFFER, vboIdTex);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*movingTextureCoordinates.size(), &movingTextureCoordinates[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 	move(0, 0, deltaTime);
 }
 
@@ -390,10 +429,21 @@ FollowEnemy::FollowEnemy(const Vector2f& pos, float scale, float speed, Texture&
 void FollowEnemy::move(float dx, float dy, float deltaTime) {
 	frontVector = player->getPosition() - position;
 	frontVector.normalize();
+	angle = frontVector.angle();
 	this->position.x += frontVector.x*speed*deltaTime;
 	this->position.y += frontVector.y*speed*deltaTime;
 }
 
 void FollowEnemy::moveEnemy(float deltaTime) {
+	move(0, 0, deltaTime);
+}
+
+void FollowEnemy::moveEnemy(float deltaTime, int frames) {
+	if (frames % 6 == 0) {
+		updateTextureCoordinates(movingTextureCoordinates);
+		glBindBuffer(GL_ARRAY_BUFFER, vboIdTex);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*movingTextureCoordinates.size(), &movingTextureCoordinates[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 	move(0, 0, deltaTime);
 }
